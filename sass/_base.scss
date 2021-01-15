@@ -8,7 +8,7 @@ $button-hovercolor: #000;
 $add-button-color: #4caf50;
 $clear-button-color: #9f6060;
 
-@mixin mq($size) {
+@mixin mp($size) {
     @media only screen and (min-width: $size) {
         @content;
     }
@@ -17,7 +17,7 @@ $clear-button-color: #9f6060;
 * {
     margin: 0;
     padding: 0;
-    box-sizing: 0;
+    box-sizing: border-box;
 }
 
 html, body {
@@ -26,7 +26,7 @@ html, body {
     color: $default-font-color;
     width: 100%;
     min-height: 100%;
-    @include mq(768px) {
+    @include mp(768px) {
         font-size: 22px;
     }
 }
