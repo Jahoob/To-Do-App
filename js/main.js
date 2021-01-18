@@ -17,8 +17,33 @@ const initApp = () => {
     itemEntryForm.addEventListener("submit", (event) => {
         event.preventDefault();
         processSubmission();
-    })
+    });
+
+    const clearItems = document.getElementById("clearItems");
+    clearItems.addEventListener("click", (event) => {
+        const list = toDoList.getList();
+        if (list.length) {
+            const confirmed = confirm("Are You sure You want to clear the entire list?");
+            if (confirmed) {
+                toDoList.clearList();
+                updatePeristentData(toDoList.getList());
+                refreshThePage();
+            }
+        }
+    });
+
+    loadListObject();
     refreshThePage();
+};
+
+const loadListObject = () => {
+    const storedList = localStorage.getItem("myToDoList");
+    if (typeof storedList !== "string") return;
+    const parsedList = JSON.parse(storedList);
+    parsedList.forEach(itemObject => {
+        const newToDoItem = createNewItem(itemObject._id, itemObj._item);
+        toDoList.addItemToList(newToDoItem);
+    });
 }
 
 const refreshThePage = () => {
@@ -26,12 +51,12 @@ const refreshThePage = () => {
     renderList();
     clearItemEntryField();
     setFocusOnItemEntry();
-}
+};
 
 const clearListDisplay = () => {
     const parentElement = document.getElementById("listItems");
     deleteContents(parentElement);
-}
+};
 
 const deleteContents = (parentElement) => {
     let child = parentElement.lastElementChild;
@@ -39,7 +64,7 @@ const deleteContents = (parentElement) => {
         parentElement.removeChild(child);
         child = parentElement.lastElementChild;
     }
-}
+};
 
 const renderList = () => {
     const list = toDoList.getList();
@@ -63,17 +88,21 @@ const buildListItem = (item) => {
     div.appendChild(label);
     const container = document.getElementById("listItems");
     container.appendChild(div);
-}
+};
 
 const addClickListenerToCheckbox = (checkbox) => {
     checkbox.addEventListener("click", (event) => {
         toDoList.removeItemFromList(checkbox.id);
-        // TODO remove from presistent data
+        updatePeristentData(toDoList.getList());
         setTimeout(() => {
             refreshThePage();
         }, 1000);
     });
-}
+};
+
+const updatePeristentData = (listArray) => {
+    localStorage.setItem("myToDoList", JSON.stringify(listArray));
+};
 
 const clearItemEntryField = () => {
     document.getElementById("newItem").value = "";
@@ -88,6 +117,9 @@ const processSubmission = () => {
     if (!newEntryText.length) return;
     const nextItemId = calcNextItemId();
     const ToDoItem = createNewItem(nextItemId, newEntryText);
+    toDoList.addItemToList(ToDoItem);
+    updatePeristentData(toDoList.getList());
+    refreshThePage();
 };
 
 const getNewEntry = () => {
