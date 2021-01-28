@@ -94,11 +94,17 @@ const addClickListenerToCheckbox = (checkbox) => {
     checkbox.addEventListener("click", (event) => {
         toDoList.removeItemFromList(checkbox.id);
         updatePeristentData(toDoList.getList());
+        const removerdText = getLabelText(check.id);
+        updateScreenReaderConfirmnation(removerdText, "removed from list");
         setTimeout(() => {
             refreshThePage();
         }, 1000);
     });
 };
+
+const getLabelText = (checkboxId) => {
+    return document.getElementById(checkboxId).nextElementSibling.textContent;
+}
 
 const updatePeristentData = (listArray) => {
     localStorage.setItem("myToDoList", JSON.stringify(listArray));
@@ -119,6 +125,7 @@ const processSubmission = () => {
     const ToDoItem = createNewItem(nextItemId, newEntryText);
     toDoList.addItemToList(ToDoItem);
     updatePeristentData(toDoList.getList());
+    updateScreenReaderConfirmnation(newEntryText, "added");
     refreshThePage();
 };
 
@@ -141,3 +148,7 @@ const createNewItem = (itemId, itemText) => {
     toDo.setItem(itemText);
     return toDo;
 };
+
+const updateScreenReaderConfirmnation = (newEntryText, actionVerb) => {
+    document.getElementById("confirmation").textContent = `${newEntryText} ${actionVerb}.`;
+}
